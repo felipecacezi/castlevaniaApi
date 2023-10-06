@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file: castlevania.sqlite"
+}
+
+model Game_titles {
+  id Int @id @default(autoincrement())
+  title String
+  console String
+  release_date DateTime
+  cover_link String
+  characters Characters[]
+}
+
+model Clans {
+  id Int @id @default(autoincrement())
+  name String
+  clan_summary String
+  characters Characters[]
+}
+
+model Characters {
+  id Int @id @default(autoincrement())
+  game_title_id Int
+  game_title Game_titles @relation(fields: [game_title_id], references: [id])
+  clan_id Int
+  clan Clans @relation(fields: [clan_id], references: [id])
+  name String
+  history String
+  character_summary String
+}
