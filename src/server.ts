@@ -2,7 +2,8 @@ import express, { Request, Response, ErrorRequestHandler } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import path from 'path'
-import routesClan from "./routes/routes_clan";
+import routesClan from "./routes/routesClan";
+import routesGameTitle from "./routes/routesGameTitle";
 
 dotenv.config()
 
@@ -11,7 +12,8 @@ server.use(cors())
 // server.use(express.static(path.join(__dirname, '../public')))
 server.use(express.urlencoded({ extended: true }))
 server.use(express.json())
-server.use(routesClan)
+server.use('/clan', routesClan)
+server.use('/gameTitle', routesGameTitle)
 
 server.use((req: Request, res: Response) => {
   res.status(404);
