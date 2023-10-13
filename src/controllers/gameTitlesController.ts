@@ -10,6 +10,7 @@ export const list = async (req: Request, res: Response) => {
     let clan = null
 
     try {
+
         if (req.query.id) {
             clan = await prisma.game_titles.findUnique({
                 where: {
@@ -34,7 +35,8 @@ export const list = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
 
-    const data = req.body
+    let data = req.body
+    data.release_date = new Date(data.release_date)
 
     if (!data.title) {
         res.status(400)
@@ -65,8 +67,10 @@ export const create = async (req: Request, res: Response) => {
     }
 
     try {
-        const clan = await prisma.game_titles.create({ data })
-        res.status(201).json(clan)
+        const gameTitle = await prisma.game_titles.create({
+            data
+        })
+        res.status(201).json(gameTitle)
     } catch (error) {
         res.status(500).json({
             message: 'Ocorreu um problema ao criar um novo titulo'
@@ -75,34 +79,39 @@ export const create = async (req: Request, res: Response) => {
 }
 
 export const update = async(req: Request, res: Response)=>{
-
-    const { id, title, console, release_date, cover_link } = req.body
-
+    
+    let data = req.body
+    data.release_date = new Date(data.release_date)
     try {
 
-        const clan = await prisma.game_titles.findUnique({
+        const gameTitle = await prisma.game_titles.findUnique({
             where: {
-                id: parseInt(id)
+                id: 2
             }
         })
 
-        if (!clan) {
+        if (!gameTitle) {
             res.status(400)
-            .json({ message: `O titulo ${ title } não foi encontrado para edição` })
+            .json({ message: `O titulo ${ data.title } não foi encontrado para edição` })
         }
 
         const update = await prisma.game_titles.update({
             where: {
-                id: id
+                id: parseInt(data.id)
             },
-            data:{ title, console, release_date, cover_link }
+            data:{ 
+                "title": data.title, 
+                "console": data.console, 
+                "release_date": data.release_date, 
+                "cover_link": data.cover_link 
+            }
         })
 
         res.status(200)
         .json(update)
-    } catch (error) {
+    } catch (error: any) {
         res.status(500)
-        .json({ message: `Ocorreu um problema ao atualizar o titulo ${title}` })
+        .json({ message: `Ocorreu um problema ao atualizar o titulo ${data.title}` })
     }
 }
 
@@ -125,7 +134,7 @@ export const remove = async (req: Request, res: Response) => {
 
         await prisma.game_titles.delete({
             where: {
-                id: id,
+                id: parseInt(id),
             },
         })
 
