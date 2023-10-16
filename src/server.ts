@@ -1,9 +1,10 @@
 import express, { Request, Response, ErrorRequestHandler } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import path from 'path'
+// import path from 'path'
 import routesClan from "./routes/routesClan";
 import routesGameTitle from "./routes/routesGameTitle";
+import routesCharacter from "./routes/routesCharacter";
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ server.use(express.urlencoded({ extended: true }))
 server.use(express.json())
 server.use('/clan', routesClan)
 server.use('/gameTitle', routesGameTitle)
+server.use("/character", routesCharacter);
 
 server.use((req: Request, res: Response) => {
   res.status(404);
