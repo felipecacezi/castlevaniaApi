@@ -1,8 +1,12 @@
 import { PrismaClient } from "@prisma/client"
 import { Router, Request, Response } from "express"
+import { z } from "zod";
 
 const router = Router()
 const prisma = new PrismaClient()
+const nameSchema = z.string().nonempty("O parametro name é obrigatório")
+const clanSummarySchema = z.string().nonempty("O parametro clan_summary é obrigatório")
+const idSchema = z.number()
 
 export const list = async (req: Request, res: Response) => {
 
@@ -36,19 +40,16 @@ export const create = async (req: Request, res: Response) => {
 
     const data = req.body
 
-    if (!data.name) {
-        res.status(400)
-        .json({
-            message: 'O parametro name é obrigatório'
-        })
-    }
+    const clanSchema = z.object({
+        name: nameSchema ,
+        clan_summary: clanSummarySchema
+    }).required();
 
-    if (!data.clan_summary) {
-        res.status(400)
-        .json({
-            message: 'O parametro clan_summary é obrigatório'
-        })
-    }
+    const resultZod = clanSchema.safeParse(data)
+
+    if (!resultZod.success) {
+        return res.status(400).json(resultZod.error);
+    } 
 
     try {
         const clan = await prisma.clans.create({ data })
@@ -64,6 +65,18 @@ export const update = async(req: Request, res: Response)=>{
 
     const { id, name, clan_summary } = req.body
 
+    const clanSchema = z.object({
+        id: idSchema,
+        name: nameSchema,
+        clan_summary: clanSummarySchema
+    }).required();
+
+    const resultZod = clanSchema.safeParse(req.body);
+
+    if (!resultZod.success) {
+        return res.status(400).json(resultZod.error);
+    } 
+
     try {
 
         const clan = await prisma.clans.findUnique({
@@ -73,7 +86,7 @@ export const update = async(req: Request, res: Response)=>{
         })
 
         if (!clan) {
-            res.status(400)
+            return res.status(400)
             .json({ message: `O clan ${ name } não foi encontrado para edição` })
         }
 
@@ -96,6 +109,20 @@ export const remove = async (req: Request, res: Response) => {
 
     const { id } = req.body
 
+    const clanSchema = z
+      .object({
+        id: idSchema,
+        name: nameSchema,
+        clan_summary: clanSummarySchema,
+      })
+      .required();
+
+    const resultZod = clanSchema.safeParse(req.body);
+
+    if (!resultZod.success) {
+      return res.status(400).json(resultZod.error);
+    } 
+
     try {
 
         const clan = await prisma.clans.findUnique({
@@ -105,7 +132,7 @@ export const remove = async (req: Request, res: Response) => {
         })
 
         if (!clan) {
-            res.status(400)
+            return res.status(400)
             .json({ message: `Não foi possivel deletar o clan` })
         }
 
