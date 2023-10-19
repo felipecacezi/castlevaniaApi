@@ -1,8 +1,16 @@
 import { PrismaClient } from "@prisma/client"
 import { Router, Request, Response } from "express"
+import { z } from "zod";
 
 const router = Router()
 const prisma = new PrismaClient()
+
+const idSchema = z.number();
+const gameTitleIdSchema = z.number();
+const clanIdSchema = z.number();
+const nameSchema = z.string().nonempty("O parametro name é obrigatório")
+const historySchema = z.string().nonempty("O parametro history é obrigatório")
+const characterSummarySchema = z.string().nonempty("O parametro character_summary é obrigatório")
 
 export const list = async (req: Request, res: Response) => {
 
@@ -36,35 +44,19 @@ export const create = async (req: Request, res: Response) => {
 
     const data = req.body
 
-    if (!data.game_title_id) {
-      res.status(400).json({
-        message: "O parametro game_title_id é obrigatório",
-      });
-    }
+    const clanSchema = z.object({
+      game_title_id: gameTitleIdSchema,
+      clan_id: clanIdSchema,
+      name: nameSchema,
+      history: historySchema,
+      character_summary: characterSummarySchema,
+    }).required();
 
-    if (!data.clan_id) {
-      res.status(400).json({
-        message: "O parametro clan_id é obrigatório",
-      });
-    }
+    const resultZod = clanSchema.safeParse(data);
 
-    if (!data.name) {
-      res.status(400).json({
-        message: "O parametro name é obrigatório",
-      });
-    }
-
-    if (!data.history) {
-      res.status(400).json({
-        message: "O parametro history é obrigatório",
-      });
-    }
-
-    if (!data.character_summary) {
-      res.status(400).json({
-        message: "O parametro character_summary é obrigatório",
-      });
-    }
+    if (!resultZod.success) {
+      return res.status(400).json(resultZod.error);
+    } 
 
     try {
         const clan = await prisma.characters.create({ data })
@@ -78,8 +70,22 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async(req: Request, res: Response)=>{
 
-    const { id, game_title_id, clan_id, name, history, character_summary } =
-      req.body;
+    const { id, game_title_id, clan_id, name, history, character_summary } = req.body;
+
+    const clanSchema = z.object({
+      id: idSchema,
+      game_title_id: gameTitleIdSchema,
+      clan_id: clanIdSchema,
+      name: nameSchema,
+      history: historySchema,
+      character_summary: characterSummarySchema,
+    }).required();
+
+    const resultZod = clanSchema.safeParse(req.body);
+
+    if (!resultZod.success) {
+      return res.status(400).json(resultZod.error);
+    } 
 
     try {
 
@@ -112,6 +118,16 @@ export const update = async(req: Request, res: Response)=>{
 export const remove = async (req: Request, res: Response) => {
 
     const { id } = req.body
+
+    const clanSchema = z.object({
+        id: idSchema,
+    }).required();
+
+    const resultZod = clanSchema.safeParse(req.body);
+
+    if (!resultZod.success) {
+        return res.status(400).json(resultZod.error);
+    } 
 
     try {
 

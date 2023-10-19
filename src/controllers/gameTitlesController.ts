@@ -1,8 +1,15 @@
 import { PrismaClient } from "@prisma/client"
 import { Router, Request, Response } from "express"
+import { z } from "zod"
 
 const router = Router()
 const prisma = new PrismaClient()
+
+const titleSchema = z.string().nonempty("O parametro title é obrigatório")
+const consoleSchema = z.string().nonempty("O parametro console é obrigatório")
+const releaseDateSchema = z.date()
+const coverLinkSchema = z.string().nonempty("O parametro cover_link é obrigatório")
+const idSchema = z.number()
 
 export const list = async (req: Request, res: Response) => {
 
@@ -38,33 +45,18 @@ export const create = async (req: Request, res: Response) => {
     let data = req.body
     data.release_date = new Date(data.release_date)
 
-    if (!data.title) {
-        res.status(400)
-        .json({
-            message: 'O parametro title é obrigatório'
-        })
-    }
+    const gameTitleSchema = z.object({
+        title: titleSchema,
+        console: consoleSchema,
+        release_date: releaseDateSchema,
+        cover_link: coverLinkSchema,
+    }).required();
 
-    if (!data.console) {
-        res.status(400)
-        .json({
-            message: 'O parametro console é obrigatório'
-        })
-    }
+    const resultZod = gameTitleSchema.safeParse(data)
 
-    if (!data.release_date) {
-        res.status(400)
-        .json({
-            message: 'O parametro release_date é obrigatório'
-        })
-    }
-
-    if (!data.cover_link) {
-        res.status(400)
-        .json({
-            message: 'O parametro cover_link é obrigatório'
-        })
-    }
+    if (!resultZod.success) {
+        res.status(400).json(resultZod.error);
+    } 
 
     try {
         const gameTitle = await prisma.game_titles.create({
@@ -84,11 +76,25 @@ export const update = async(req: Request, res: Response)=>{
     data.release_date = new Date(data.release_date)
     try {
 
+        const gameTitleSchema = z.object({
+            id: idSchema,
+            title: titleSchema,
+            console: consoleSchema,
+            release_date: releaseDateSchema,
+            cover_link: coverLinkSchema,
+        }).required();
+
+        const resultZod = gameTitleSchema.safeParse(data);
+
+        if (!resultZod.success) {
+            res.status(400).json(resultZod.error);
+        } 
+
         const gameTitle = await prisma.game_titles.findUnique({
-            where: {
-                id: 2
-            }
-        })
+          where: {
+            id: parseInt(data.id)
+          },
+        });
 
         if (!gameTitle) {
             res.status(400)
@@ -119,6 +125,16 @@ export const remove = async (req: Request, res: Response) => {
 
     const { id } = req.body
 
+    const gameTitleSchema = z.object({
+        id: idSchema
+    }).required()
+
+    const resultZod = gameTitleSchema.safeParse({ id })
+
+    if (!resultZod.success) {
+      return res.status(400).json(resultZod.error)
+    } 
+
     try {
 
         const game_titles = await prisma.game_titles.findUnique({
@@ -128,7 +144,7 @@ export const remove = async (req: Request, res: Response) => {
         })
 
         if (!game_titles) {
-            res.status(400)
+            return res.status(400)
             .json({ message: `Não foi possivel deletar o titulo` })
         }
 
