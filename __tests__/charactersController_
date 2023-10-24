@@ -1,0 +1,22 @@
+import supertest from 'supertest'
+import app from '../src/app'
+
+test('POST /characters', async () => {
+    
+    const response = await supertest(app)
+    .post('/characters')
+    .send({
+        game_title_id: 1,
+        clan_id: 1,
+        name: 'Alucard',
+        history: `Adrian Fahrenheit Ţepeş (アドリアン・ファーレンハイツ・ツェペシュ Adorian Fārenhaitsu Tsepeshu?)[4] (also spelled as Adrian Farenheights Tepes[5]), better known as Alucard (アルカード Arukādo?), is the dhampir son of Dracula. Despite having debuted in Castlevania III: Dracula's Curse as a supporting character, Alucard was reintroduced as the main protagonist of Castlevania: Symphony of the Night, his most well-known appearance.
+            As the offspring of an unnatural bond between Dracula and a human woman named Lisa, Adrian had special powers and was destined to be stronger than any human but not potentially as strong as his father. After Lisa was killed, having been mistaken for a witch, Adrian grew up under the influence of his father, whence he was taught in the dark arts and molded into a warrior who would one day fight for the side of evil.        
+            Adrian's existence did not come without quirks, as the gentle, human side of his mother always seemed to cloud his "better judgement", as Dracula would have put it. At her death, Adrian was by his mother's side. She insisted that he not take his anger at her death out on the humans, as their lives are already full of hardship. With those words, she had a profound influence on Adrian's thinking. His mind wandered as he questioned his father's will. After standing by for as long as he could, he broke away from his father's army and disappeared. Understanding that Dracula was going to impose his wrath on the people, Adrian would turn his efforts toward destroying his father's army, hopefully encouraging him to reconsider. Furthermore, he chose to go under the name "Alucard" –Dracula's name in reverse– to represent that he stood for beliefs opposite those of his father.        
+            Alucard is an adept swordsman and typically wields one-handed swords. Alucard's other attacks use dark magic. As a shapeshifter, Alucard can change himself into a bat, a wolf, or even mist.`,
+        character_summary: `Adrian Fahrenheit Ţepeş (アドリアン・ファーレンハイツ・ツェペシュ Adorian Fārenhaitsu Tsepeshu?)[4] (also spelled as Adrian Farenheights Tepes[5]), better known as Alucard (アルカード Arukādo?), is the dhampir son of Dracula. Despite having debuted in Castlevania III: Dracula's Curse as a supporting character, Alucard was reintroduced as the main protagonist of Castlevania: Symphony of the Night, his most well-known appearance.`,
+    })
+    .set('Accept', 'application/json/')
+    .expect('Content-Type', /json/)
+    .expect(201);
+
+});

@@ -23,9 +23,9 @@ export const list = async (req: Request, res: Response) => {
                 where: {
                     id: parseInt(id)
                 }
-            })
+            }) ?? {}
         } else {
-            clan = await prisma.game_titles.findMany()
+            clan = await prisma.game_titles.findMany() ?? {}
         }
 
         res.status(200)
@@ -55,7 +55,7 @@ export const create = async (req: Request, res: Response) => {
     const resultZod = gameTitleSchema.safeParse(data)
 
     if (!resultZod.success) {
-        res.status(400).json(resultZod.error);
+        return res.status(400).json(resultZod.error);
     } 
 
     try {
@@ -87,7 +87,7 @@ export const update = async(req: Request, res: Response)=>{
         const resultZod = gameTitleSchema.safeParse(data);
 
         if (!resultZod.success) {
-            res.status(400).json(resultZod.error);
+            return res.status(400).json(resultZod.error);
         } 
 
         const gameTitle = await prisma.game_titles.findUnique({
@@ -97,7 +97,7 @@ export const update = async(req: Request, res: Response)=>{
         });
 
         if (!gameTitle) {
-            res.status(400)
+            return res.status(400)
             .json({ message: `O titulo ${ data.title } não foi encontrado para edição` })
         }
 
