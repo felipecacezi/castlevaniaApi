@@ -19,9 +19,9 @@ export const list = async (req: Request, res: Response) => {
                 where: {
                     id: parseInt(id)
                 }
-            })
+            }) ?? {}
         } else {
-            clan = await prisma.clans.findMany()
+            clan = await prisma.clans.findMany() ?? {}
         }
 
         res.status(200)
@@ -112,8 +112,6 @@ export const remove = async (req: Request, res: Response) => {
     const clanSchema = z
       .object({
         id: idSchema,
-        name: nameSchema,
-        clan_summary: clanSummarySchema,
       })
       .required();
 
