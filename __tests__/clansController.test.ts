@@ -149,7 +149,7 @@ test('GET-EMPTY /clan?id=1', async () => {
 
 });
 
-test('UPDATE-SUCCESS /clan', async () => {
+test('UPDATE-ERROR /clan', async () => {
     
     await supertest(app)
         .put('/clan')
@@ -183,7 +183,7 @@ test('UPDATE-SUCCESS /clan', async () => {
     
 });
 
-test('DELETE-SUCCESS /clan', async () => {
+test('DELETE-ERROR /clan', async () => {
     
     await supertest(app)
         .delete('/clan')

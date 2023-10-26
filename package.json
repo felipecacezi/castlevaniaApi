@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "migrate:test": "dotenv -e .env.test -- npx prisma migrate dev",
-    "migrate:testdown": "rm  prisma/castlevaniatest.sqlite",
-    "test": "rm rm  prisma/castlevaniatest.sqlite & dotenv -e .env.test -- npx prisma migrate dev & dotenv -e .env.test jest",
-    "dev": "nodemon -e ts,json src/server.ts"
+    "test:prepare" : "dotenv -e .env.test -- npx prisma migrate dev",
+    "test": "dotenv -e .env.test -- jest",
+    "dev": "dotenv -e .env.development -- nodemon -e ts,json src/server.ts"
   },
   "keywords": [],
   "author": "",
