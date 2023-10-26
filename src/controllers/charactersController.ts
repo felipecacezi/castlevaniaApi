@@ -96,7 +96,7 @@ export const update = async(req: Request, res: Response)=>{
         })
 
         if (!character) {
-            res.status(400)
+            return res.status(400)
             .json({ message: `O personagem ${ name } não foi encontrado para edição` })
         }
 
@@ -138,7 +138,7 @@ export const remove = async (req: Request, res: Response) => {
         })
 
         if (!character) {
-            res.status(400)
+            return res.status(400)
             .json({ message: `Não foi possivel deletar o personagem` })
         }
 

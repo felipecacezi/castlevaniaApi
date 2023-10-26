@@ -11,4 +11,4 @@ services:
     environment:
       POSTGRES_USER: prisma
       POSTGRES_PASSWORD: prisma
-      POSTGRES_DB: tests
+      POSTGRES_MULTIPLE_DATABASES: tests, development, production
